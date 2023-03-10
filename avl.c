@@ -1,218 +1,168 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "avl.h"
-#include<stdio.h>
 
 
-void preorder (arvore  raiz){
-
-if (raiz != NULL){
-    printf("%d", raiz->valor);
-    preorder(raiz->esq);
-    preorder(raiz->dir);
-}
-
-
-
-}
-
-void inorder (arvore raiz){
-if(raiz!=NULL){
-    inorder(raiz->esq);
-    printf("%d", raiz->valor);
-    inorder(raiz->dir);
-}
-
-}
-
-void posorder (arvore raiz){
-    posorder(raiz->esq);
-    posorder(raiz->dir);
-    printf("%d", raiz->valor);
-}
-
-arvore maiorElemento (arvore raiz){
-
-if(raiz!=NULL && raiz->dir==NULL){
-    return raiz;
-}
-
-if(raiz!=NULL){
-    return maiorElemento(raiz->dir);
-}
-
-return raiz;
-
-
-}
-
-
-arvore inserir(arvore raiz, int valor, int* cresceu){
-    if(raiz == NULL) {
-		arvore novo = (arvore) malloc(sizeof(arvore));
-		novo->valor = valor;
-		novo->esq = NULL;
-		novo->dir = NULL;
-		novo->fatorBalanco = 0;
-	  * cresceu = 1; 
-		return novo;
+int altura(No *no) {
+    if (no == NULL) {
+        return -1;
+    } else {
+        return no->altura;
     }
+}
 
-    else{
-        if(valor > raiz->valor){
-            raiz->dir = inserir(raiz->dir, valor, cresceu);
-            if(*cresceu){   
-                switch (raiz->fatorBalanco)
-                {
-                case 0:
-                    raiz->fatorBalanco =1;
-                    *cresceu = 1;
-                    
-                    break;
-                
-                case -1:
-                    raiz->fatorBalanco = 0;
-                    *cresceu = 0;
+int max(int a, int b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
 
+No *rotacaoEsquerda(No *no) {
+    No *aux = no->dir;
+    no->dir = aux->esq;
+    aux->esq = no;
+    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
+    aux->altura = max(altura(aux->dir), no->altura) + 1;
+    return aux;
+}
 
-                    break;
+No *rotacaoDireita(No *no) {
+    No *aux = no->esq;
+    no->esq = aux->dir;
+    aux->dir = no;
+    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
+    aux->altura = max(altura(aux->esq), no->altura) + 1;
+    return aux;
+}
 
-                case 1:
-                    *cresceu = 0;
-                    return rotacionar(raiz);
-                    
-                    break;    
-                }
+No *rotacaoDuplaEsquerda(No *no) {
+    no->dir = rotacaoDireita(no->dir);
+    return rotacaoEsquerda(no);
+}
 
+No *rotacaoDuplaDireita(No *no) {
+    no->esq = rotacaoEsquerda(no->esq);
+    return rotacaoDireita(no);
+}
+
+No *inserir(No *no, int chave) {
+    if (no == NULL) {
+        no = (No *) malloc(sizeof(No));
+        no->chave = chave;
+        no->altura = 0;
+        no->esq = no->dir = NULL;
+    } else if (chave < no->chave) {
+        no->esq = inserir(no->esq, chave);
+        if (altura(no->esq) - altura(no->dir) == 2) {
+            if (chave < no->esq->chave) {
+                no = rotacaoDireita(no);
+            } else {
+                no = rotacaoDuplaDireita(no);
             }
-
         }
-        else{
-            raiz->esq = inserir(raiz->esq, valor, cresceu);
-            if(*cresceu){
-                switch (raiz->fatorBalanco)
-                {
-                case 0:
-                    raiz->fatorBalanco =-1;
-                    *cresceu = 1;
-                    
-                    break;
-                
-                case -1:
-                    *cresceu = 0;
-                    return rotacionar(raiz);
-
-
-                    break;
-
-                case 1:
-                    *cresceu = 0;
-                    raiz->fatorBalanco =0;
-                    
-                    break;    
-                }
+    } else if (chave > no->chave) {
+        no->dir = inserir(no->dir, chave);
+        if (altura(no->dir) - altura(no->esq) == 2) {
+            if (chave > no->dir->chave) {
+                no = rotacaoEsquerda(no);
+            } else {
+                no = rotacaoDuplaEsquerda(no);
             }
-            
-        }  
-        return raiz;
-    }
-    return raiz;
-
-
-
-}
-
-arvore rotacionar (arvore raiz){
-
-    if(raiz->fatorBalanco > 0){
-        switch (raiz->dir->fatorBalanco)
-        {
-        case 1: //simples esquerda 
-            raiz->dir->fatorBalanco = 0; //raiz direito eh U
-            raiz->fatorBalanco = 0;
-            return rot_simples_esquerda(raiz);   //raiz eh P
-            break;
-
-        case 0: //simples esquerda excluir
-            raiz->dir->fatorBalanco = -1;
-            raiz->fatorBalanco = 1; 
-            return rot_simples_esquerda(raiz);    
-            break;
-
-        case -1: //dupla esquerda
-        
-            break;     
         }
     }
+    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
+    return no;
+}
 
-    else{
-        switch (raiz->esq->fatorBalanco)
-        {
-        case -1: //simples direita
-            raiz->esq->fatorBalanco =0; //raiz esquerdo eh U
-            raiz->fatorBalanco = 0;
-            return rot_simples_direita(raiz);   //raiz eh P
-            break;
-        
-        case 0: //simples direita excluir
-            raiz->esq->fatorBalanco = 1;
-            raiz->fatorBalanco =-1;
-            return rot_dupla_direita(raiz);
-            break;
-
-        case 1: //dupla direita
-            switch (raiz->esq->dir->fatorBalanco)
-            {
-            case 0 :
-                raiz->esq->fatorBalanco = 0;
-                raiz->fatorBalanco = 0;
-                break;
-            case 1:     
-                raiz->esq->fatorBalanco = -1;
-                raiz->fatorBalanco = 0;
-
-            case -1:
-                raiz->esq->fatorBalanco =0;
-                raiz->fatorBalanco = 1;
-                raiz->esq->dir->fatorBalanco = 0;
-                break;
+No *remover(No *no, int chave) {
+    if (no == NULL) {
+        return NULL;
+    } else if (chave < no->chave) {
+        no->esq = remover(no->esq, chave);
+    } else if (chave > no->chave) {
+        no->dir = remover(no->dir, chave);
+    } else {
+        if (no->esq == NULL && no->dir == NULL) {
+            free(no);
+            no = NULL;
+        } else if (no->esq == NULL) {
+            No *aux = no;
+            no = no->dir;
+            free(aux);
+        } else if (no->dir == NULL) {
+            No *aux = no;
+            no = no->esq;
+            free(aux);
+        } else {
+            No *aux = no->esq;
+            while (aux->dir != NULL) {
+                aux = aux->dir;
             }
-            return rot_dupla_direita(raiz);
-                 
+            no->chave = aux->chave;
+            aux->chave = chave;
+            no->esq = remover(no->esq, chave);
         }
+    }
+    if (no != NULL) {
+        no->altura = max(altura(no->esq), altura(no->dir)) + 1;
+        if (altura(no->esq) - altura(no->dir) == 2) {
+            if (altura(no->esq->esq) - altura(no->esq->dir) == 1) {
+                no = rotacaoDireita(no);
+            } else {
+                no = rotacaoDuplaDireita(no);
+            }
+        } else if (altura(no->dir) - altura(no->esq) == 2) {
+            if (altura(no->dir->dir) - altura(no->dir->esq) == 1) {
+                no = rotacaoEsquerda(no);
+            } else {
+                no = rotacaoDuplaEsquerda(no);
+            }
+        }
+    }
+    return no;
+}
 
+void imprimir(No *no) {
+    if (no != NULL) {
+        imprimir(no->esq);
+        printf("%d ", no->chave);
+        imprimir(no->dir);
     }
 }
 
+No *preorder (No * raiz)
+{
 
-arvore rot_simples_esquerda(arvore raiz){
-    arvore p,u,t2;
-    p = raiz;
-    u = p->dir;
-    t2 = u->esq;
-    p->dir = t2;
-    u->esq = p;
-    return u;
+  if (raiz != NULL)
+    {
+      printf ("%d ", raiz->chave);
+      preorder (raiz->esq);
+      preorder (raiz->dir);
+    }
 }
 
-arvore rot_simples_direita(arvore raiz){
-    arvore p,u,t2;
-    p = raiz;
-    u = p->esq;
-    t2 = u->dir;
-    p->esq = t2;
-    u->dir = p;
-    return u;
+No*inorder (No* raiz)
+{
+
+  if (raiz != NULL)
+    {
+      inorder (raiz->esq);
+      printf ("%d ", raiz->chave);
+      inorder (raiz->dir);
+    }
 
 }
 
-arvore rot_dupla_esquerda(arvore raiz){
-    raiz->dir = rot_simples_direita(raiz->dir);
-    return rot_simples_esquerda(raiz);
+
+No *posorder (No * raiz)
+{
+
+  if (raiz != NULL)
+    {
+      posorder (raiz->esq);
+      posorder (raiz->dir);
+      printf ("%d ", raiz->chave);
+    }
 }
-
-arvore rot_dupla_direita(arvore raiz){
-    raiz->esq = rot_simples_esquerda(raiz->esq);
-    return rot_simples_direita(raiz);
-}
-
-arvore remover (arvore raiz, int valor){}
-

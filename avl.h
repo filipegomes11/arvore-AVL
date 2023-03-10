@@ -3,41 +3,28 @@
 #include <stdlib.h>
 
 
+typedef struct no {
+    int chave;
+    int altura;
+    struct no *esq;
+    struct no *dir;
+} No;
 
-typedef struct no{
+int altura(No *no);
+int max(int a, int b);
+No *rotacaoEsquerda(No *no);
+No *rotacaoDireita(No *no);
+No *rotacaoDuplaEsquerda(No *no);
+No *rotacaoDuplaDireita(No *no);
+No *inserir(No *no, int chave);
+No *remover(No *no, int chave);
+void imprimir(No *no);
+No *preorder (No * raiz);
+No *inorder (No * raiz);
+No *posorder (No * raiz);
 
-int valor;
-int fatorBalanco;
-
-struct no* dir;
-struct no* esq;
-    
-}no;
-
-typedef no* arvore;
-
-arvore inserir(arvore raiz, int valor, int* cresceu);
 
 
-void preorder (arvore  raiz);
-
-void inorder (arvore raiz);
-
-void posorder (arvore raiz);
-
-arvore maiorElemento (arvore raiz);
-
-arvore remover (arvore raiz, int valor);
-
-arvore rotacionar (arvore raiz);
-
-arvore rot_simples_esquerda(arvore raiz);
-
-arvore rot_simples_direita(arvore raiz);
-
-arvore rot_dupla_esquerda(arvore raiz);
-
-arvore rot_dupla_direita(arvore raiz);
 
 
 #endif
