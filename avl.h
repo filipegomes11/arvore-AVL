@@ -4,24 +4,25 @@
 
 
 typedef struct no {
-    int chave;
-    int altura;
+    char *marca;
+    int alturaAVL;
     struct no *esq;
     struct no *dir;
+    int indice;
 } No;
 
-int altura(No *no);
+int alturaAVL(No *no);
 int max(int a, int b);
-No *rotacaoEsquerda(No *no);
-No *rotacaoDireita(No *no);
-No *rotacaoDuplaEsquerda(No *no);
-No *rotacaoDuplaDireita(No *no);
-No *inserir(No *no, int chave);
-No *remover(No *no, int chave);
+No *rotacaoEsquerdaAVL(No *no);
+No *rotacaoDireitaAVL(No *no);
+No *rotacaoDuplaEsquerdaAVL(No *no);
+No *rotacaoDuplaDireitaAVL(No *no);
+No *inserirAVL(No *no, int marca);
+No *removerAVL(No *no, int marca);
 void imprimir(No *no);
-No *preorder (No * raiz);
-No *inorder (No * raiz);
-No *posorder (No * raiz);
+No *preorderAVL (No * raiz);
+No *inorderAVL (No * raiz);
+No *posorderAVL (No * raiz);
 
 
 

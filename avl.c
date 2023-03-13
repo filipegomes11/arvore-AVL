@@ -3,11 +3,11 @@
 #include "avl.h"
 
 
-int altura(No *no) {
+int alturaAVL(No *no) {
     if (no == NULL) {
         return -1;
     } else {
-        return no->altura;
+        return no->alturaAVL;
     }
 }
 
@@ -19,70 +19,70 @@ int max(int a, int b) {
     }
 }
 
-No *rotacaoEsquerda(No *no) {
+No *rotacaoEsquerdaAVL(No *no) {
     No *aux = no->dir;
     no->dir = aux->esq;
     aux->esq = no;
-    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
-    aux->altura = max(altura(aux->dir), no->altura) + 1;
+    no->alturaAVL = max(alturaAVL(no->esq), alturaAVL(no->dir)) + 1;
+    aux->alturaAVL = max(alturaAVL(aux->dir), no->alturaAVL) + 1;
     return aux;
 }
 
-No *rotacaoDireita(No *no) {
+No *rotacaoDireitaAVL(No *no) {
     No *aux = no->esq;
     no->esq = aux->dir;
     aux->dir = no;
-    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
-    aux->altura = max(altura(aux->esq), no->altura) + 1;
+    no->alturaAVL = max(alturaAVL(no->esq), alturaAVL(no->dir)) + 1;
+    aux->alturaAVL = max(alturaAVL(aux->esq), no->alturaAVL) + 1;
     return aux;
 }
 
-No *rotacaoDuplaEsquerda(No *no) {
+No *rotacaoDuplaEsquerdaAVL(No *no) {
     no->dir = rotacaoDireita(no->dir);
-    return rotacaoEsquerda(no);
+    return rotacaoEsquerdaAVL(no);
 }
 
-No *rotacaoDuplaDireita(No *no) {
-    no->esq = rotacaoEsquerda(no->esq);
-    return rotacaoDireita(no);
+No *rotacaoDuplaDireitaAVL(No *no) {
+    no->esq = rotacaoEsquerdaAVL(no->esq);
+    return rotacaoDireitaAVL(no);
 }
 
-No *inserir(No *no, int chave) {
+No *inserirAVL(No *no, int marca) {
     if (no == NULL) {
         no = (No *) malloc(sizeof(No));
-        no->chave = chave;
-        no->altura = 0;
+        strcpy(no->marca , marca);
+        no->alturaAVL = 0;
         no->esq = no->dir = NULL;
-    } else if (chave < no->chave) {
-        no->esq = inserir(no->esq, chave);
-        if (altura(no->esq) - altura(no->dir) == 2) {
-            if (chave < no->esq->chave) {
-                no = rotacaoDireita(no);
+    } else if (strcmp(marca , no->marca)<0) {
+        no->esq = inserir(no->esq, marca);
+        if (alturaAVL(no->esq) - alturaAVL(no->dir) == 2) {
+            if (strcmp(marca , no->esq->marca)<0) {
+                no = rotacaoDireitaAVL(no);
             } else {
-                no = rotacaoDuplaDireita(no);
+                no = rotacaoDuplaDireitaAVL(no);
             }
         }
-    } else if (chave > no->chave) {
-        no->dir = inserir(no->dir, chave);
-        if (altura(no->dir) - altura(no->esq) == 2) {
-            if (chave > no->dir->chave) {
-                no = rotacaoEsquerda(no);
+    } else if (strcmp (marca , no->marca)>0) {
+        no->dir = inserirAVl(no->dir, marca);
+        if (alturaAVL(no->dir) - alturaAVL(no->esq) == 2) {
+            if (strcmp (marca , no->dir->marca)>0) {
+                no = rotacaoEsquerdaAVL(no);
             } else {
-                no = rotacaoDuplaEsquerda(no);
+                no = rotacaoDuplaEsquerdaAVL(no);
             }
         }
     }
-    no->altura = max(altura(no->esq), altura(no->dir)) + 1;
+    no->alturaAVL = max(alturaAVL(no->esq), alturaAVL(no->dir)) + 1;
     return no;
 }
 
-No *remover(No *no, int chave) {
+No *removerAVL(No *no, int marca) {
     if (no == NULL) {
         return NULL;
-    } else if (chave < no->chave) {
-        no->esq = remover(no->esq, chave);
-    } else if (chave > no->chave) {
-        no->dir = remover(no->dir, chave);
+    } else if (strcmp(marca , no->marca<0)) {
+        no->esq = removerAVL(no->esq, marca);
+    } else if (strcmp (marca , no->marca)>0) {
+        no->dir = removerAVL(no->dir, marca);
     } else {
         if (no->esq == NULL && no->dir == NULL) {
             free(no);
@@ -100,24 +100,24 @@ No *remover(No *no, int chave) {
             while (aux->dir != NULL) {
                 aux = aux->dir;
             }
-            no->chave = aux->chave;
-            aux->chave = chave;
-            no->esq = remover(no->esq, chave);
+            strcpy(no->marca , aux->marca);
+            aux->marca = marca;
+            no->esq = removerAVL(no->esq, marca);
         }
     }
     if (no != NULL) {
-        no->altura = max(altura(no->esq), altura(no->dir)) + 1;
-        if (altura(no->esq) - altura(no->dir) == 2) {
-            if (altura(no->esq->esq) - altura(no->esq->dir) == 1) {
-                no = rotacaoDireita(no);
+        no->alturaAVL = max(alturaAVL(no->esq), alturaAVL(no->dir)) + 1;
+        if (alturaAVL(no->esq) - alturaAVL(no->dir) == 2) {
+            if (alturaAVL(no->esq->esq) - alturaAVL(no->esq->dir) == 1) {
+                no = rotacaoDireitaAVL(no);
             } else {
-                no = rotacaoDuplaDireita(no);
+                no = rotacaoDuplaDireitaAVL(no);
             }
-        } else if (altura(no->dir) - altura(no->esq) == 2) {
-            if (altura(no->dir->dir) - altura(no->dir->esq) == 1) {
-                no = rotacaoEsquerda(no);
+        } else if (alturaAVL(no->dir) - alturaAVL(no->esq) == 2) {
+            if (alturaAVL(no->dir->dir) - alturaAVL(no->dir->esq) == 1) {
+                no = rotacaoEsquerdaAVL(no);
             } else {
-                no = rotacaoDuplaEsquerda(no);
+                no = rotacaoDuplaEsquerdaAVL(no);
             }
         }
     }
@@ -127,42 +127,42 @@ No *remover(No *no, int chave) {
 void imprimir(No *no) {
     if (no != NULL) {
         imprimir(no->esq);
-        printf("%d ", no->chave);
+        printf("%d ", no->marca);
         imprimir(no->dir);
     }
 }
 
-No *preorder (No * raiz)
+No *preorderAVL (No * raiz)
 {
 
   if (raiz != NULL)
     {
-      printf ("%d ", raiz->chave);
-      preorder (raiz->esq);
-      preorder (raiz->dir);
+      printf ("%d ", raiz->marca);
+      preorderAVL (raiz->esq);
+      preorderAVL (raiz->dir);
     }
 }
 
-No*inorder (No* raiz)
+No*inorderAVL (No* raiz)
 {
 
   if (raiz != NULL)
     {
-      inorder (raiz->esq);
-      printf ("%d ", raiz->chave);
-      inorder (raiz->dir);
+      inorderAVL (raiz->esq);
+      printf ("%d ", raiz->marca);
+      inorderAVL (raiz->dir);
     }
 
 }
 
 
-No *posorder (No * raiz)
+No *posorderAVL (No * raiz)
 {
 
   if (raiz != NULL)
     {
-      posorder (raiz->esq);
-      posorder (raiz->dir);
-      printf ("%d ", raiz->chave);
+      posorderAVL (raiz->esq);
+      posorderAVL (raiz->dir);
+      printf ("%d ", raiz->marca);
     }
 }

@@ -2,12 +2,12 @@
 
 int main() {
     No *raiz = NULL;
-    raiz = inserir(raiz, 10);
-    raiz = inserir(raiz, 20);
-    raiz = inserir(raiz, 30);
-    raiz = inserir(raiz, 40);
-    raiz = inserir(raiz, 50);
-    raiz = inserir(raiz, 25);
+    raiz = inserirAVL(raiz, 10);
+    raiz = inserirAVL(raiz, 20);
+    raiz = inserirAVL(raiz, 30);
+    raiz = inserirAVL(raiz, 40);
+    raiz = inserirAVL(raiz, 50);
+    raiz = inserirAVL(raiz, 25);
     imprimir(raiz);
 
     
